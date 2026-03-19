@@ -92,9 +92,35 @@ function EditableCell({ value, onChange, align, className, placeholder, rowIdx, 
 
   useLayoutEffect(() => {
     if (!multiline || !taRef.current) return
+    // 인쇄 모드에서는 JS 높이 지정을 제거해 CSS auto가 동작하도록
+    if (window.matchMedia('print').matches) {
+      taRef.current.style.height = ''
+      return
+    }
     taRef.current.style.height = 'auto'
     taRef.current.style.height = `${taRef.current.scrollHeight}px`
   }, [value, multiline])
+
+  // 인쇄 전: 전체 내용이 보이도록 scrollHeight 확장 / 후: 원상복구
+  useEffect(() => {
+    if (!multiline) return
+    const beforePrint = () => {
+      if (!taRef.current) return
+      taRef.current.style.height = 'auto'
+      taRef.current.style.height = `${taRef.current.scrollHeight}px`
+    }
+    const afterPrint = () => {
+      if (!taRef.current) return
+      taRef.current.style.height = 'auto'
+      taRef.current.style.height = `${taRef.current.scrollHeight}px`
+    }
+    window.addEventListener('beforeprint', beforePrint)
+    window.addEventListener('afterprint',  afterPrint)
+    return () => {
+      window.removeEventListener('beforeprint', beforePrint)
+      window.removeEventListener('afterprint',  afterPrint)
+    }
+  }, [multiline])
 
   const handleKeyDown = (e) => {
     if (e.nativeEvent.isComposing) return
@@ -443,8 +469,16 @@ export default function QuoteEditor({ data, onChange, onReset, onSignOut, suppli
     doSave(snapshot)
   }
 
-  // supabaseId 있을 때만 변경 감지 → 3초 디바운스 자동 저장
+  // 마운트/재마운트마다 플래그를 리셋해 초기 데이터로 자동 저장 방지
+  // (React StrictMode의 mount → unmount → remount 사이클에서도 안전)
+  const autoSaveMounted = useRef(false)
   useEffect(() => {
+    autoSaveMounted.current = false          // 매 (재)마운트 시 리셋
+    return () => { autoSaveMounted.current = false }
+  }, [])
+
+  useEffect(() => {
+    if (!autoSaveMounted.current) { autoSaveMounted.current = true; return }
     if (!isSupabaseReady || !data.supabaseId) return
     const snapshot = { info, rows, extras, supabaseId: data.supabaseId }
     clearTimeout(autoSaveTimer.current)
