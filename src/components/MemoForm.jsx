@@ -24,9 +24,9 @@ function RadioGroup({ options, value, onChange }) {
 }
 
 // ── 옵션 칩 (다중 선택) ──────────────────────────────
-function MultiGroup({ options, value = [], onChange }) {
+function MultiGroup({ options, value, onChange }) {
+  const arr = Array.isArray(value) ? value : []
   const toggle = (opt) => {
-    const arr = Array.isArray(value) ? value : []
     onChange(arr.includes(opt) ? arr.filter((v) => v !== opt) : [...arr, opt])
   }
   return (
@@ -35,10 +35,10 @@ function MultiGroup({ options, value = [], onChange }) {
         <button
           key={opt}
           type="button"
-          className={`option-chip multi${value?.includes(opt) ? ' selected' : ''}`}
+          className={`option-chip multi${arr.includes(opt) ? ' selected' : ''}`}
           onClick={() => toggle(opt)}
         >
-          {value?.includes(opt) && <span className="check-mark">✓ </span>}
+          {arr.includes(opt) && <span className="check-mark">✓ </span>}
           {opt}
         </button>
       ))}

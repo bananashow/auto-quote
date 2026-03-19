@@ -35,7 +35,7 @@ export const INITIAL_FORM = {
   ],
   living: {
     artwall: '', tvWall: '', ceiling: '', ceilingType: [],
-    lighting: [], fan: false, aircon: false,
+    lighting: [], fan: [], aircon: [],
     balcony: '', balconyTile: '', memo: '',
   },
   kitchen: {
