@@ -271,9 +271,10 @@ function QuoteRow({
 
   if (row.type === 'header') {
     const subtotal = effRow?._subtotal ?? 0
+    const headerEmpty = !row.item?.trim()
     return (
       <tr className={`row-header ${dropClass} ${selectedClass}`} {...dragProps}>
-        <td colSpan={4}>
+        <td colSpan={4} className={headerEmpty ? 'cell-empty-warn' : ''}>
           <div className="row-header-inner">
             <DragHandle onClick={(e) => onHandleClick(e, index)} isSelected={isSelected} />
             <EditableCell
@@ -307,9 +308,11 @@ function QuoteRow({
     onUpdate(index, { ...row, item: cleanText, level: next })
   }
 
+  const itemEmpty = !cleanText?.trim()
+
   return (
     <tr className={`row-item row-level-${level} ${dropClass} ${selectedClass}`} {...dragProps}>
-      <td className="cell-item">
+      <td className={`cell-item${itemEmpty ? ' cell-empty-warn' : ''}`}>
         <div className="cell-item-inner">
           <DragHandle onClick={(e) => onHandleClick(e, index)} isSelected={isSelected} />
           <div className={`item-num-wrap level-${level}`}>
@@ -748,7 +751,11 @@ export default function QuoteEditor({ data, onChange, onReset, onSignOut, suppli
   })()
 
   const handlePrint = () => {
+    const paper = document.getElementById('quote-print')
+    const prevZoom = paper?.style.zoom
+    if (paper) paper.style.zoom = '1'
     window.print()
+    if (paper && prevZoom !== undefined) paper.style.zoom = prevZoom
   }
 
   const handleXlsx = () => {

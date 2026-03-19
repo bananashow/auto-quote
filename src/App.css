@@ -931,16 +931,19 @@
 }
 
 .header-right {
-  border: 1px solid #1a1a1a;
+  border: 1.5px solid #1a1a1a;
+  border-radius: 2px;
+  overflow: hidden;
 }
 
 .supplier-title {
-  background: #f8fafc;
+  background: #1a1a1a;
+  color: white;
   text-align: center;
   font-weight: 700;
-  font-size: 10pt;
-  padding: 4px;
-  border-bottom: 1px solid #1a1a1a;
+  font-size: 9pt;
+  padding: 5px 4px;
+  letter-spacing: 2px;
 }
 
 .supplier-table {
@@ -950,23 +953,30 @@
 
 .supplier-table th,
 .supplier-table td {
-  border: 1px solid #ccc;
-  padding: 3px 6px;
-  font-size: 9pt;
+  border: 1px solid #c0c4cc;
+  padding: 4px 6px;
+  font-size: 8.5pt;
+  vertical-align: middle;
 }
 
 .supplier-table th {
-  background: #f8fafc;
+  background: #f3f4f6;
   white-space: nowrap;
   font-weight: 600;
   text-align: center;
-  width: 60px;
+  width: 58px;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.supplier-table td {
+  color: #1a1a1a;
 }
 
 .supplier-input {
   border: none;
   outline: none;
-  font-size: 7.5pt;
+  font-size: 8.5pt;
   width: 100%;
   background: transparent;
   padding: 0;
@@ -1029,11 +1039,12 @@
   font-size: 9.5pt;
   font-weight: 600;
   border: 1px solid #1a1a1a;
+  border-bottom: 1px solid #444;
 }
 
 /* Row: header (category) */
 .row-header td {
-  border: 1px solid #d4d4d4;
+  border: 1px solid #c0c4cc;
   background: #f0f0f0;
   padding: 0;
 }
@@ -1080,8 +1091,15 @@
 
 /* Row: item */
 .row-item td {
-  border: 1px solid #e2e8f0;
+  border: 1px solid #c0c4cc;
   padding: 0;
+  vertical-align: top;
+}
+
+/* 단일행 셀: 내용 중앙 정렬 */
+.cell-qty,
+.cell-price,
+.cell-amount {
   vertical-align: middle;
 }
 
@@ -1124,7 +1142,7 @@
   user-select: none;
   pointer-events: none;
   line-height: 1.5;
-  padding: 4px 4px 0 6px;
+  padding: 6px 4px 2px 6px;
 }
 
 .item-num-wrap.level-2 .row-num-label {
@@ -1142,6 +1160,17 @@
   background: #fafafa !important;
 }
 
+/* 품목 미작성 경고 */
+.cell-empty-warn {
+  background: #ffd6d6 !important;
+}
+.row-level-2 .cell-empty-warn {
+  background: #ffd6d6 !important;
+}
+.row-header .cell-empty-warn {
+  background: #ffb8b8 !important;
+}
+
 .row-level-2 .cell-input {
   color: #4b5563;
   font-size: 9.5pt !important;
@@ -1157,7 +1186,7 @@
   font-size: 9.5pt;
   font-family: inherit;
   color: inherit;
-  padding: 4px 6px;
+  padding: 6px 6px 2px;
   line-height: 1.5;
   box-sizing: border-box;
 }
@@ -1278,7 +1307,7 @@ tr[draggable="true"]:active {
    Extras / 별도사항
    ========================================= */
 .extras-section {
-  border: 1px solid #e2e8f0;
+  border: 1px solid #c0c4cc;
   border-top: none;
   padding: 8px 10px;
 }
@@ -1383,7 +1412,7 @@ tr[draggable="true"]:active {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0;
+    margin: 12mm 14mm;
   }
 
   *, *::before, *::after {
@@ -1414,15 +1443,16 @@ tr[draggable="true"]:active {
     display: block;
   }
 
-  /* 종이 자체에 여백 (화면과 동일한 패딩) */
+  /* @page margin이 모든 페이지 여백을 담당 — paper는 패딩 제거 */
   .quote-paper {
-    width: 210mm;
-    min-height: 297mm;
-    padding: 14mm 14mm 12mm;
+    zoom: 1 !important;   /* 화면 확대/축소 상태 무시, 항상 100% */
+    width: 100%;
+    min-height: auto;
+    padding: 0;
     box-shadow: none !important;
     border-radius: 0 !important;
     font-size: 8.5pt;
-    margin: 0 auto;
+    margin: 0;
   }
 
   .quote-table {
@@ -1443,8 +1473,14 @@ tr[draggable="true"]:active {
 
   /* 합계 바 */
   .quote-total-bar {
-    background: #f0f4ff !important;
-    border: 2px solid #1a1a1a !important;
+    background: #eef2ff !important;
+    border: 1pt solid #1a1a1a !important;
+  }
+
+  /* 별도사항 섹션 */
+  .extras-section {
+    border: 0.5pt solid #888 !important;
+    border-top: none !important;
   }
   .total-value { color: #1a1a1a !important; }
   .total-label { font-size: 9pt !important; }
@@ -1500,20 +1536,51 @@ tr[draggable="true"]:active {
   .cell-amount-computed   { font-size: 8pt !important; }
   .extras-title           { font-size: 8pt !important; }
   .extra-input            { font-size: 8pt !important; }
-  .supplier-table th,
+  /* ── 테이블 테두리: 모든 td/th를 동일 규격으로 통일 ── */
+  .quote-table            { border-collapse: collapse !important; }
+  .quote-table th,
+  .quote-table td         { border: 0.5pt solid #888 !important; }
+  .table-head-row th      { border: 0.5pt solid #444 !important; background: #1a1a1a !important; }
+  .row-header td          { border: 0.5pt solid #888 !important; background: #f0f0f0 !important; }
+  .row-item td            { border: 0.5pt solid #888 !important; }
+  .row-level-2 td         { background: #fafafa !important; }
+  .header-subtotal        { background: #e0e0e0 !important; }
+
+  /* 공급자 테이블 */
+  .header-right           { border: 1pt solid #1a1a1a !important; }
+  .supplier-title         { background: #1a1a1a !important; color: white !important; font-size: 8pt !important; }
+  .supplier-table         { border-collapse: collapse !important; }
+  .supplier-table th      { background: #f0f0f0 !important; font-size: 7.5pt !important; }
   .supplier-table td      { font-size: 7.5pt !important; }
+  .supplier-table th,
+  .supplier-table td      { border: 0.5pt solid #888 !important; padding: 3px 5px !important; }
+
+  /* 하단 합계 테이블 */
+  .bottom-table           { border-collapse: collapse !important; }
+  .bottom-table th,
+  .bottom-table td        { border: 0.5pt solid #888 !important; font-size: 9pt !important; }
+  .bottom-table td        { font-size: 11pt !important; }
+
+  /* 기타 */
   .date-input             { font-size: 8.5pt !important; }
   .header-subtitle        { font-size: 8pt !important; }
   .construction-period    { font-size: 8pt !important; }
   .period-input           { font-size: 8pt !important; }
-  .bottom-table th,
-  .bottom-table td        { font-size: 9pt !important; }
-  .bottom-table td        { font-size: 11pt !important; }
   .vat-note               { font-size: 8pt !important; }
 
   /* hover 상태 제거 */
   .row-item:hover td,
-  .row-header:hover td { background: inherit !important; }
+  .row-header:hover td    { background: inherit !important; }
+
+  /* 인쇄 시 경고 배경 제거 (모든 레벨/행 유형 포함) */
+  .quote-table .cell-empty-warn,
+  .quote-table .row-level-2 .cell-empty-warn,
+  .quote-table .row-header .cell-empty-warn,
+  td.cell-empty-warn { background: transparent !important; }
+
+  /* 인쇄 시 placeholder 숨김 */
+  .cell-input::placeholder,
+  .cell-textarea::placeholder { color: transparent !important; }
 
   /* 드래그 핸들 / 행 액션 버튼 완전 제거 */
   .drag-handle, .row-actions, .row-btn,
