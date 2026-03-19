@@ -1081,7 +1081,7 @@
 .cell-amount-computed {
   display: block;
   text-align: right;
-  padding: 0 6px;
+  padding: 6px 6px 2px;
   font-size: 9.5pt;
   font-weight: 400;
   color: #374151;
@@ -1096,10 +1096,10 @@
   vertical-align: top;
 }
 
-/* 단일행 셀: 내용 중앙 정렬 */
-.cell-qty,
-.cell-price,
-.cell-amount {
+/* 단일행 셀: 내용 중앙 정렬 (row-item td보다 명시도 높게) */
+.row-item td.cell-qty,
+.row-item td.cell-price,
+.row-item td.cell-amount {
   vertical-align: middle;
 }
 
