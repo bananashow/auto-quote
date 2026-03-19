@@ -87,7 +87,13 @@ function navigateCell(rowIdx, colIdx, dir) {
   }
 }
 
-function EditableCell({ value, onChange, align, className, placeholder, rowIdx, colIdx, multiline, onTab }) {
+function fmtComma(val) {
+  const n = parseFloat(String(val).replace(/,/g, ''))
+  if (isNaN(n)) return val
+  return n.toLocaleString('ko-KR')
+}
+
+function EditableCell({ value, onChange, align, className, placeholder, rowIdx, colIdx, multiline, onTab, numeric }) {
   const taRef = useRef(null)
 
   useLayoutEffect(() => {
@@ -164,6 +170,14 @@ function EditableCell({ value, onChange, align, className, placeholder, rowIdx, 
     }
   }
 
+  const handleNumericBlur = (e) => {
+    if (!numeric) return
+    const raw = e.target.value.trim()
+    if (!raw) return
+    const formatted = fmtComma(raw)
+    if (formatted !== raw) onChange(formatted)
+  }
+
   const commonProps = {
     'data-row': rowIdx,
     'data-col': colIdx,
@@ -172,6 +186,8 @@ function EditableCell({ value, onChange, align, className, placeholder, rowIdx, 
     placeholder: placeholder || '',
     onChange: (e) => onChange(e.target.value),
     onKeyDown: handleKeyDown,
+    onBlur: numeric ? handleNumericBlur : undefined,
+    inputMode: numeric ? 'numeric' : undefined,
   }
 
   if (multiline) {
@@ -328,6 +344,7 @@ function QuoteRow({
           placeholder="-"
           rowIdx={index}
           colIdx={3}
+          numeric
         />
       </td>
       <td className={`cell-amount${effRow?._computed ? ' cell-amount-auto' : ''}`}>
@@ -343,6 +360,7 @@ function QuoteRow({
             placeholder="-"
             rowIdx={index}
             colIdx={4}
+            numeric
           />
         )}
       </td>
